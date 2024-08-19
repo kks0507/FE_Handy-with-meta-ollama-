@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diary Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #app {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>일기 분석기</h1>
+        <p>내용을 입력하세요:</p>
+        <textarea id="diaryEntry" placeholder="일기 내용을 입력하세요."></textarea>
+        <button onclick="analyzeDiary()">분석하기</button>
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        async function analyzeDiary() {
+            const diaryEntry = document.getElementById('diaryEntry').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/diary/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ diaryEntry })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                document.getElementById('response').innerHTML = `
+                    <p><strong>Response:</strong> ${result.Response}</p>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = `<p>분석 중 오류가 발생했습니다. 다시 시도해 주세요.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
